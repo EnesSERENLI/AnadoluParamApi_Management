@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AnadoluParamApi.Base.Types;
+using System.ComponentModel.DataAnnotations;
 
 namespace AnadoluParamApi.Dto.Dtos
 {
@@ -11,5 +12,8 @@ namespace AnadoluParamApi.Dto.Dtos
         [Required(AllowEmptyStrings = true)]
         [MaxLength(1000,ErrorMessage = "Description cannot be more than 1000 characters.")]
         public string Description { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        public Status Status { get; set; }
     }
 }

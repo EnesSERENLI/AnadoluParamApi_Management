@@ -1,13 +1,16 @@
 ﻿using AnadoluParamApi.Base.Attribute;
-using AnadoluParamApi.Base.Types;
 using System.ComponentModel.DataAnnotations;
 
 namespace AnadoluParamApi.Dto.Dtos
 {
-    public class ProductDto
+    public class UpdateProductDto
     {
+        [Required(ErrorMessage = "The ID of the product to be updated cannot be left blank.")]
+        [Range(1, int.MaxValue, ErrorMessage = "ID value must be greater than 0")]
+        public int ID { get; set; }
+
         [Required(ErrorMessage = "ProductName cannot be empty.")]
-        [MaxLength(255,ErrorMessage = "ProductName cannot be more than 255 characters.")]
+        [MaxLength(255, ErrorMessage = "ProductName cannot be more than 255 characters.")]
         public string ProductName { get; set; }
 
         [Required(AllowEmptyStrings = true)]
@@ -27,13 +30,10 @@ namespace AnadoluParamApi.Dto.Dtos
         public string UnitType { get; set; }
 
         [Required(ErrorMessage = "SubCategory cannot be empty!")]
-        [Range(1,int.MaxValue, ErrorMessage = "SubCategoryId must be greater than 0")]
+        [Range(1, int.MaxValue, ErrorMessage = "SubCategoryId must be greater than 0")]
         public int SubCategoryId { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         public string SubCategoryName { get; set; }
-
-        [Required(AllowEmptyStrings = true)]
-        public Status Status { get; set; }
     }
 }

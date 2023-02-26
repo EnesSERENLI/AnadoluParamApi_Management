@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AnadoluParamApi.Base\AnadoluParamApi.Base.csproj" />
+    <ProjectReference Include="..\AnadoluParamApi.Data\AnadoluParamApi.Data.csproj" />
+    <ProjectReference Include="..\AnadoluParamApi.Dto\AnadoluParamApi.Dto.csproj" />
+  </ItemGroup>
+
 </Project>
