@@ -16,6 +16,7 @@ namespace AnadoluParamApi.Data.Repository.Abstract.BaseRepository
         Task<IEnumerable<T>> GetAllListAsync();
         Task<T> GetByIdAsync(int id);
         Task<List<T>> GetByDefaults(Expression<Func<T, bool>> expression);
+        Task<T> GetByDefault(Expression<Func<T, bool>> expression);
 
         Task<bool> Any(Expression<Func<T, bool>> expression);
         Task<TResult> GetFilteredFirstOrDefault<TResult>(Expression<Func<T, TResult>> selector,

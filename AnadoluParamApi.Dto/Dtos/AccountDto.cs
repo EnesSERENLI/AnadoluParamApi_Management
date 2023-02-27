@@ -1,4 +1,5 @@
 ﻿using AnadoluParamApi.Base.Attribute;
+using AnadoluParamApi.Base.Types;
 using System.ComponentModel.DataAnnotations;
 
 namespace AnadoluParamApi.Dto.Dtos
@@ -11,9 +12,9 @@ namespace AnadoluParamApi.Dto.Dtos
         [Display(Name = "User Name")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Password cannot be empty.")]
-        [MaxLength(25,ErrorMessage = "Password cannot be more than 25 characters.")]
-        public string Password { get; set; }
+        //[Required(ErrorMessage = "Password cannot be empty.")]
+        //[MaxLength(25,ErrorMessage = "Password cannot be more than 25 characters.")]
+        //public string Password { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         [MaxLength(100,ErrorMessage = "Name cannot be more than 100 characters.")]
@@ -30,7 +31,7 @@ namespace AnadoluParamApi.Dto.Dtos
 
         [Required(ErrorMessage = "Role cannot be empty.")]
         [RoleAttribute]
-        public int Role { get; set; }
+        public string Role { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         [MaxLength(2,ErrorMessage = "Gender cannot be more than 2 characters.")]
@@ -38,5 +39,8 @@ namespace AnadoluParamApi.Dto.Dtos
 
         [Display(Name = "Last Activity")]
         public DateTime LastActivity { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        public Status Status { get; set; }
     }
 }

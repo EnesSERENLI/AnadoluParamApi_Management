@@ -2,6 +2,7 @@
 using AnadoluParamApi.Data.Mapping.Concrete;
 using AnadoluParamApi.Data.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,4 +39,15 @@ namespace AnadoluParamApi.Data.Context
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }       
     }
+
+    //public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+    //{
+    //    public AppDbContext CreateDbContext(string[] args)
+    //    {
+    //        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    //        optionsBuilder.UseSqlServer("server=DESKTOP-JOE5KI8\\SQLEXPRESS02;Database=AnadoluParamApiDB;Trusted_Connection=True; MultipleActiveResultSets=True;");
+
+    //        return new AppDbContext(optionsBuilder.Options);
+    //    }
+    //}
 }

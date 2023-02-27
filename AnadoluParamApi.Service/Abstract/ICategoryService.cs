@@ -21,6 +21,6 @@ namespace AnadoluParamApi.Service.Abstract
 
         Task<List<CategoryDto>> GetDefaultCategoriesAsync();
         //Find
-        Task<UpdateCategoryDto> GetByIdCategoryAsync(int id);
+        Task<UpdateCategoryDto> GetCategoryByIdAsync(int id);
     }
 }

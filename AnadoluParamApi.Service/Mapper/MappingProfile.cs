@@ -25,10 +25,12 @@ namespace AnadoluParamApi.Service.Mapper
 
             #region SubCategory Mapper
             CreateMap<SubCategoryDto, SubCategory>().ReverseMap();
+            CreateMap<UpdateSubCategoryDto, SubCategory>().ReverseMap();
             #endregion
 
             #region Account Mapper
             CreateMap<AccountDto, Account>().ReverseMap();
+            CreateMap<UpdateAccountDto, Account>().ReverseMap();
             #endregion
 
             #region Order Mapper

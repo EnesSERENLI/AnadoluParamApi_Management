@@ -11,6 +11,7 @@ namespace AnadoluParamApi.Base.Types
     {
         Active = 1,
         Updated = 2,
-        Deleted = 3
+        Deleted = 3,
+        Done = 4 //For complated basket.. 
     }
 }

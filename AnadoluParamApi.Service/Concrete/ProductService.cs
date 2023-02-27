@@ -3,6 +3,7 @@ using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AnadoluParamApi.Service.Concrete
 {
@@ -115,11 +116,16 @@ namespace AnadoluParamApi.Service.Concrete
 
         public async Task<string> UpdateProduct(UpdateProductDto model)
         {
-            var product = _mapper.Map<Product>(model);
-            product.Status = Base.Types.Status.Updated;
-            product.UpdatedDate = DateTime.Now;
+            var updated = _mapper.Map<Product>(model);
+            var updatedExist = await _unitOfWork.ProductRepository.Any(x => x.ID == updated.ID);
 
-            _unitOfWork.ProductRepository.Update(product);
+            if (updatedExist)
+                return "Product not found!";
+
+            updated.Status = Base.Types.Status.Updated;
+            updated.UpdatedDate = DateTime.Now;
+
+            _unitOfWork.ProductRepository.Update(updated);
             await _unitOfWork.CompleteAsync();
 
             return "Product updated!";

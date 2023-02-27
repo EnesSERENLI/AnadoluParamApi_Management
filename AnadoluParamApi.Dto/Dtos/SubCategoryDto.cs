@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AnadoluParamApi.Base.Types;
+using System.ComponentModel.DataAnnotations;
 
 namespace AnadoluParamApi.Dto.Dtos
 {
@@ -15,5 +16,8 @@ namespace AnadoluParamApi.Dto.Dtos
         [Required(ErrorMessage = "CategoryId cannot be empty.")]
         [Range(1, 100000, ErrorMessage = "CategoryId must be greater than 0")]
         public int CategoryId { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        public Status Status { get; set; }
     }
 }

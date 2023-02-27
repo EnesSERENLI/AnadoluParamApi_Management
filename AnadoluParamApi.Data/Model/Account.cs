@@ -11,7 +11,7 @@ namespace AnadoluParamApi.Data.Model
         public string Email { get; set; }
         public string Gender { get; set; }
         public string Role { get; set; }
-        public DateTime LastActivity { get; set; }
+        public DateTime? LastActivity { get; set; }
 
         //Relation Property
         public virtual List<Order> Orders { get; set; }

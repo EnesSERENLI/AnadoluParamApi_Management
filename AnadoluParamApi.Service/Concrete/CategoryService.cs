@@ -17,7 +17,7 @@ namespace AnadoluParamApi.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<UpdateCategoryDto> GetByIdCategoryAsync(int id)
+        public async Task<UpdateCategoryDto> GetCategoryByIdAsync(int id)
         {
             var category = await _unitOfWork.CategoryRepository.GetFilteredFirstOrDefault(selector: x => new Category
             {
@@ -108,6 +108,11 @@ namespace AnadoluParamApi.Service.Concrete
             try
             {
                 var updated = _mapper.Map<Category>(model);
+                var updatedExist = await _unitOfWork.CategoryRepository.Any(x => x.ID == updated.ID);
+
+                if (!updatedExist)
+                    return "Category not found!";
+
                 updated.Status = Base.Types.Status.Updated;
                 updated.UpdatedDate = DateTime.Now;
 
