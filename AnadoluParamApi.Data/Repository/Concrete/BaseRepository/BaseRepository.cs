@@ -92,7 +92,10 @@ namespace AnadoluParamApi.Data.Repository.Concrete.BaseRepository
 
         public async Task InsertAsync(T model) => await entities.AddAsync(model); //Insert
 
-        public void Update(T model) => entities.Update(model); //Update
+        public void Update(T model) //Update
+        {
+            Context.Entry<T>(model).State = EntityState.Modified;
+        } 
 
         public async Task<T> GetByDefault(Expression<Func<T, bool>> expression)
         {

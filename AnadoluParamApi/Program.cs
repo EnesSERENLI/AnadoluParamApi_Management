@@ -14,6 +14,8 @@ builder.Services.AddDbContextDI(builder.Configuration);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddServiceDI();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

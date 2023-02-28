@@ -27,7 +27,8 @@ namespace AnadoluParamApi.Service.Concrete
                 UnitsInStock = x.UnitsInStock,
                 Status = x.Status,
                 SubCategoryId = x.SubCategoryId,
-                SubCategoryName = x.SubCategory.SubCategoryName
+                SubCategoryName = x.SubCategory.SubCategoryName,
+                UnitType = x.UnitType
             },
             expression: x => x.Status != Base.Types.Status.Deleted);
 
@@ -36,7 +37,7 @@ namespace AnadoluParamApi.Service.Concrete
 
         public async Task<UpdateProductDto> GetProductByIdAsync(int id)
         {
-            var product = await _unitOfWork.ProductRepository.GetFilteredFirstOrDefault(selector: x => new Product
+            var product = await _unitOfWork.ProductRepository.GetFilteredFirstOrDefault(selector: x => new UpdateProductDto
             {
                 ID = x.ID,
                 ProductName = x.ProductName,
@@ -44,13 +45,14 @@ namespace AnadoluParamApi.Service.Concrete
                 UnitPrice = x.UnitPrice,
                 UnitsInStock = x.UnitsInStock,
                 UnitType = x.UnitType,
-                SubCategoryId = x.SubCategoryId
+                SubCategoryId = x.SubCategoryId,
+                SubCategoryName = x.SubCategory.SubCategoryName
             },
             expression: x => x.ID == id);
 
-            var model = _mapper.Map<UpdateProductDto>(product);
+            //var model = _mapper.Map<UpdateProductDto>(product);
 
-            return model;
+            return product;
         }
 
         public async Task<List<ProductDto>> GetAllProductsAsync()
@@ -62,6 +64,7 @@ namespace AnadoluParamApi.Service.Concrete
                 UnitPrice = x.UnitPrice,
                 UnitsInStock = x.UnitsInStock,
                 UnitType = x.UnitType,
+                SubCategoryId = x.SubCategoryId,
                 SubCategoryName = x.SubCategory.SubCategoryName,
                 Status = x.Status
             },
@@ -79,6 +82,7 @@ namespace AnadoluParamApi.Service.Concrete
                 UnitPrice = x.UnitPrice,
                 UnitsInStock = x.UnitsInStock,
                 UnitType = x.UnitType,
+                SubCategoryId = x.SubCategoryId,
                 SubCategoryName = x.SubCategory.SubCategoryName,
                 Status = x.Status
             },
@@ -119,7 +123,7 @@ namespace AnadoluParamApi.Service.Concrete
             var updated = _mapper.Map<Product>(model);
             var updatedExist = await _unitOfWork.ProductRepository.Any(x => x.ID == updated.ID);
 
-            if (updatedExist)
+            if (!updatedExist)
                 return "Product not found!";
 
             updated.Status = Base.Types.Status.Updated;

@@ -12,7 +12,7 @@ namespace AnadoluParamApi.Base.Attribute
                 if (value is null)
                     return new ValidationResult("Invalid UnitType name field.");
 
-                if (Enum.IsDefined(typeof(UnitTypeEnum), value))
+                if (GetUnitType((string)value))
                     return ValidationResult.Success;
                 else
                     return new ValidationResult("Invalid UnitType field.");
@@ -21,6 +21,13 @@ namespace AnadoluParamApi.Base.Attribute
             {
                 return new ValidationResult("Invalid UnitType field.");
             }
+        }
+
+        private bool GetUnitType(string unitType)
+        {
+            if (unitType == UnitType.Solid || unitType == UnitType.Liquid || unitType == UnitType.powder)
+                return true;
+            return false;
         }
     }
 }

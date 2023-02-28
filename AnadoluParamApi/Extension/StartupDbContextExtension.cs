@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AnadoluParamApi.Extension
 {
-    public static class StartupDbContextExtention
+    public static class StartupDbContextExtension
     {
         public static void AddDbContextDI(this IServiceCollection services, IConfiguration configuration)
         {

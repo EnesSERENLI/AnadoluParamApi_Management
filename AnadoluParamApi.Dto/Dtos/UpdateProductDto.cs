@@ -22,7 +22,7 @@ namespace AnadoluParamApi.Dto.Dtos
         public decimal UnitPrice { get; set; }
 
         [Required(ErrorMessage = "Stock quantity cannot be empty.")]
-        [Range(typeof(short), "1", "100000", ErrorMessage = "Stock quantity must be greater than 0")]
+        [Range(typeof(short), "1", "32000", ErrorMessage = "Stock quantity must be greater than 0")]
         public short UnitsInStock { get; set; }
 
         [Required(AllowEmptyStrings = true)]

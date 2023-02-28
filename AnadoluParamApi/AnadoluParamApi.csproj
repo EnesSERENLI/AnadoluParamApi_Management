@@ -27,11 +27,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Controllers\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\AnadoluParamApi.Data\AnadoluParamApi.Data.csproj" />
+	  <ProjectReference Include="..\AnadoluParamApi.Service\AnadoluParamApi.Service.csproj" />
 	</ItemGroup>
 
 </Project>

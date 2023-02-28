@@ -1,14 +1,7 @@
 ﻿using AnadoluParamApi.Data.Context;
-using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.Repository.Abstract.EntityTypeRepository;
-using AnadoluParamApi.Data.Repository.Concrete.BaseRepository;
 using AnadoluParamApi.Data.Repository.Concrete.EntityTypeRepository;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnadoluParamApi.Data.UnitOfWork.Concrete
 {
@@ -46,12 +39,12 @@ namespace AnadoluParamApi.Data.UnitOfWork.Concrete
                 try
                 {
                     dbContext.SaveChanges();
-                    //dbContextTransaction.Commit();
+                    dbContextTransaction.Commit();
                 }
                 catch (Exception ex)
                 {
                     // logging                    
-                    //dbContextTransaction.Rollback();
+                    dbContextTransaction.Rollback();
                 }
             }
         }
