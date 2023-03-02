@@ -40,7 +40,7 @@ namespace AnadoluParamApi.Dto.Dtos
 
         [Required(ErrorMessage = "Role cannot be empty.")]
         [RoleAttribute]
-        public int Role { get; set; }
+        public string Role { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         [MaxLength(2, ErrorMessage = "Gender cannot be more than 2 characters.")]

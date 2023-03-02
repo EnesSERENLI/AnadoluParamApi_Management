@@ -12,9 +12,9 @@ namespace AnadoluParamApi.Dto.Dtos
         [Display(Name = "User Name")]
         public string UserName { get; set; }
 
-        //[Required(ErrorMessage = "Password cannot be empty.")]
-        //[MaxLength(25,ErrorMessage = "Password cannot be more than 25 characters.")]
-        //public string Password { get; set; }
+        [Required(ErrorMessage = "Password cannot be empty.")]
+        [MaxLength(25, ErrorMessage = "Password cannot be more than 25 characters.")]
+        public string Password { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         [MaxLength(100,ErrorMessage = "Name cannot be more than 100 characters.")]

@@ -11,9 +11,10 @@ namespace AnadoluParamApi.Base.Attribute
             {
                 if (value is null)
                     return new ValidationResult("Invalid Role field.");
-
-                if (Enum.IsDefined(typeof(RoleEnum), value))
+                if ((string)value.ToString().ToLower() == RoleEnum.Admin.ToString().ToLower() || (string)value == RoleEnum.Member.ToString().ToLower())
                     return ValidationResult.Success;
+                //if (Enum.IsDefined(typeof(RoleEnum), value))
+                    
                 else
                     return new ValidationResult("Invalid Role field.");
             }

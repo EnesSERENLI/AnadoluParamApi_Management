@@ -101,6 +101,10 @@ namespace AnadoluParamApi.Service.Concrete
             if (result)
                 return "This Product already exists";
 
+            var subCategpryExist = await _unitOfWork.SubCategoryRepository.Any(x => x.ID == product.SubCategoryId); //Category control
+            if (!subCategpryExist)
+                return "The Subcategory you want to add was not found!";
+
             await _unitOfWork.ProductRepository.InsertAsync(product);
             await _unitOfWork.CompleteAsync();
             return "Product added!";
@@ -125,6 +129,10 @@ namespace AnadoluParamApi.Service.Concrete
 
             if (!updatedExist)
                 return "Product not found!";
+
+            var subCategpryExist = await _unitOfWork.SubCategoryRepository.Any(x => x.ID == updated.SubCategoryId); //Category control
+            if (!subCategpryExist)
+                return "The Subcategory you want to add was not found!";
 
             updated.Status = Base.Types.Status.Updated;
             updated.UpdatedDate = DateTime.Now;

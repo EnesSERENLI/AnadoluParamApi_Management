@@ -4,6 +4,7 @@ using AnadoluParamApi.Service.Abstract;
 using AnadoluParamApi.Service.Concrete;
 using AnadoluParamApi.Service.Mapper;
 using AutoMapper;
+using Microsoft.OpenApi.Models;
 
 namespace AnadoluParamApi.Extension
 {
@@ -25,6 +26,30 @@ namespace AnadoluParamApi.Extension
                 cfg.AddProfile(new MappingProfile());
             });
             services.AddSingleton(mapperConfig.CreateMapper());
+        }
+
+        public static void AddCustomizeSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("AnadoluParamApi", new OpenApiInfo()
+                {
+                    Title = "RESTful API",
+                    Version = "V1",
+                    Description = "AnadoluPrmPracticum FinalCase",
+                    Contact = new OpenApiContact()
+                    {
+                        Email = "enes.serenli@hotmail.com",
+                        Name = "Enes Serenli",
+                        Url = new Uri("https://github.com/EnesSERENLI/AnadoluParamApi_Management")
+                    },
+                    License = new OpenApiLicense()
+                    {
+                        Name = "MIT Licence",
+                        Url = new Uri("https://opensource.org/licenses/MIT")
+                    }
+                });
+            });
         }
     }
 }

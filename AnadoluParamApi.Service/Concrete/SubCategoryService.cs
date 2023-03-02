@@ -23,7 +23,8 @@ namespace AnadoluParamApi.Service.Concrete
             {
                 SubCategoryName = x.SubCategoryName,
                 Status = x.Status,
-                Description = x.Description
+                Description = x.Description,
+                CategoryId = x.CategoryId
             },
             expression: x => x.Status == Base.Types.Status.Active || x.Status == Base.Types.Status.Updated
             );
@@ -37,7 +38,8 @@ namespace AnadoluParamApi.Service.Concrete
             {
                 SubCategoryName = x.SubCategoryName,
                 Description = x.Description,
-                Status = x.Status
+                Status = x.Status,
+                CategoryId = x.CategoryId
             },
             expression: x => x.Status == Base.Types.Status.Active || x.Status == Base.Types.Status.Updated || x.Status == Base.Types.Status.Deleted
             );
@@ -51,7 +53,8 @@ namespace AnadoluParamApi.Service.Concrete
             {
                 ID = x.ID,
                 SubCategoryName = x.SubCategoryName,
-                Description = x.Description
+                Description = x.Description,
+                CategoryId = x.CategoryId
             },
             expression: x => x.ID == id);
 
@@ -70,6 +73,10 @@ namespace AnadoluParamApi.Service.Concrete
 
                 if (result)
                     return "This SubCategory already exists!";
+
+                var categoryExist = await _unitOfWork.CategoryRepository.Any(x => x.ID == subCategory.CategoryId); //Category control
+                if (!categoryExist)
+                    return "The category you want to add was not found!";
 
                 await _unitOfWork.SubCategoryRepository.InsertAsync(subCategory);
                 await _unitOfWork.CompleteAsync();
@@ -112,6 +119,10 @@ namespace AnadoluParamApi.Service.Concrete
 
                 if (!updatedExist)
                     return "SubCategory not found!";
+
+                var categoryExist = await _unitOfWork.CategoryRepository.Any(x => x.ID == updated.CategoryId); //Category control
+                if (!categoryExist)
+                    return "The category you want to add was not found!";
 
                 updated.Status = Base.Types.Status.Updated;
                 updated.UpdatedDate = DateTime.Now;

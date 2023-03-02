@@ -3,6 +3,7 @@ using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Extension;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddServiceDI();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddCustomizeSwagger();
 
 var app = builder.Build();
 
@@ -26,7 +27,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/AnadoluParamApi/swagger.json", "AnadoluParamApi");
+    });
 }
 
 app.UseHttpsRedirection();

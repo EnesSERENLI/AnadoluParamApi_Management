@@ -14,7 +14,7 @@ namespace AnadoluParamApi.Dto.Dtos
         public string Description { get; set; }
 
         [Required(ErrorMessage = "CategoryId cannot be empty.")]
-        [Range(1, 100000, ErrorMessage = "CategoryId must be greater than 0")]
+        [Range(1, int.MaxValue, ErrorMessage = "CategoryId must be greater than 0")]
         public int CategoryId { get; set; }
 
         [Required(AllowEmptyStrings = true)]

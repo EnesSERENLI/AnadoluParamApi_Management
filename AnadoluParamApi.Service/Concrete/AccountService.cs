@@ -1,4 +1,5 @@
-﻿using AnadoluParamApi.Data.UnitOfWork.Abstract;
+﻿using AnadoluParamApi.Data.Model;
+using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
@@ -19,8 +20,6 @@ namespace AnadoluParamApi.Service.Concrete
         public async Task<AccountDto> GetAccountByUserNameAsync(string userName)
         {
             var account = await _unitOfWork.AccountRepository.GetByDefault(x => x.UserName == userName);
-            if (account == null)
-                return null;
 
             var accountDto = _mapper.Map<AccountDto>(account);
             return accountDto;
@@ -46,8 +45,6 @@ namespace AnadoluParamApi.Service.Concrete
         public async Task<UpdateAccountDto> GetByIdAccountAsync(int id)
         {
             var account = await _unitOfWork.AccountRepository.GetByDefault(x => x.ID == id);
-            if (account == null)
-                return null;
 
             var updateAccountDto = _mapper.Map<UpdateAccountDto>(account);
             return updateAccountDto;
@@ -58,9 +55,21 @@ namespace AnadoluParamApi.Service.Concrete
             throw new NotImplementedException();
         }
 
-        public Task<string> Register(AccountDto model) //Token işlemleri yapılırken yazılacak
+        public async Task<string> Register(AccountDto model)
         {
-            throw new NotImplementedException();
+            var account = _mapper.Map<Account>(model);
+
+            var isEmailExist = await _unitOfWork.AccountRepository.Any(x => x.Email == account.Email); //Email control
+            if (isEmailExist)
+                return "This Email already exist!";
+
+            var isUserNameExist = await _unitOfWork.AccountRepository.Any(x => x.UserName == account.UserName); //UserName control
+            if (isUserNameExist)
+                return "This UserName already exist!";
+
+            await _unitOfWork.AccountRepository.InsertAsync(account);
+            await _unitOfWork.CompleteAsync();
+            return "Registration completed!";
         }
     }
 }

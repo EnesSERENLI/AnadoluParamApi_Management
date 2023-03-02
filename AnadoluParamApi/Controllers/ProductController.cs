@@ -32,7 +32,7 @@ namespace AnadoluParamApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProductById([FromQuery] int id) //For members
+        public async Task<IActionResult> GetProductById([FromQuery] int id) //For members (Member can see onlu active products)
         {
             var result = await productService.GetProductByIdAsync(id);
             if (result == null)
