@@ -4,6 +4,7 @@ using AnadoluParamApi.Service.Abstract;
 using AnadoluParamApi.Service.Concrete;
 using AnadoluParamApi.Service.Mapper;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
 namespace AnadoluParamApi.Extension
@@ -18,7 +19,7 @@ namespace AnadoluParamApi.Extension
             services.AddScoped<ICategoryService,CategoryService>();
             services.AddScoped<ISubCategoryService,SubCategoryService>();
             services.AddScoped<IAccountService, AccountService>();
-
+            services.AddScoped<ITokenManagementService, TokenManagementService>();
 
             // mapper
             var mapperConfig = new MapperConfiguration(cfg =>
@@ -48,6 +49,26 @@ namespace AnadoluParamApi.Extension
                         Name = "MIT Licence",
                         Url = new Uri("https://opensource.org/licenses/MIT")
                     }
+                });
+
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Techa Management for IT Company",
+                    Description = "Enter JWT Bearer token **_only_**",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer", // Must be lower case
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+                options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {securityScheme, new string[] { }}
                 });
             });
         }

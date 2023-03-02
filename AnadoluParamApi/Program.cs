@@ -1,3 +1,4 @@
+using AnadoluParamApi.Base.Jwt;
 using AnadoluParamApi.Data.Context;
 using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Extension;
@@ -5,20 +6,21 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+//public static JwtConfig JwtConfig { get; private set; }
 var builder = WebApplication.CreateBuilder(args);
 
-
+JwtConfig jwtConfig = builder.Configuration.GetSection("JwtConfig").Get<JwtConfig>();
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 // Add services to the container.
 
-builder.Services.AddControllers();
+
 builder.Services.AddDbContextDI(builder.Configuration);
+builder.Services.AddServiceDI();
+builder.Services.AddJwtBearerAuthentication(jwtConfig);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddServiceDI();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers();
 builder.Services.AddCustomizeSwagger();
 
 var app = builder.Build();
@@ -35,8 +37,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseRouting();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();
