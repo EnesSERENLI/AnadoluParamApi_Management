@@ -7,6 +7,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
+using StackExchange.Redis;
 
 namespace AnadoluParamApi.Extension
 {
@@ -38,6 +40,37 @@ namespace AnadoluParamApi.Extension
                 cfg.AddProfile(new MappingProfile());
             });
             services.AddSingleton(mapperConfig.CreateMapper());
+        }
+
+        //Redis
+        public static void AddRedisDependencyInjection(this IServiceCollection services, IConfiguration Configuration)
+        {
+            //redis 
+            var configurationOptions = new ConfigurationOptions();
+            configurationOptions.EndPoints.Add(Configuration["Redis:Host"], Convert.ToInt32(Configuration["Redis:Port"]));
+            int.TryParse(Configuration["Redis:DefaultDatabase"], out int defaultDatabase);
+            configurationOptions.DefaultDatabase = defaultDatabase;
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.ConfigurationOptions = configurationOptions;
+                options.InstanceName = Configuration["Redis:InstanceName"];
+            });
+        }
+
+        //MongoDb
+        public static void AddMongoDBDI(this IServiceCollection services)
+        {
+            services.AddSingleton<IMongoDatabase>(provider =>
+            {
+                IConfiguration configuration = provider.GetService<IConfiguration>();
+                var connectionString = configuration.GetConnectionString("MongoConnection");
+                string databaseName = configuration.GetConnectionString("DatabaseName");
+
+                MongoClientSettings settings = MongoClientSettings.FromConnectionString(connectionString);
+                MongoClient mongoClient = new MongoClient(settings);
+                var db = mongoClient.GetDatabase(databaseName);
+                return db;
+            });
         }
 
         public static void AddCustomizeSwagger(this IServiceCollection services)

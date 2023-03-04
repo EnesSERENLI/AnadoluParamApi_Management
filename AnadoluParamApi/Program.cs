@@ -13,11 +13,13 @@ JwtConfig jwtConfig = builder.Configuration.GetSection("JwtConfig").Get<JwtConfi
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 // Add services to the container.
 
-
+//builder.Services.AddMemoryCache(); // memory cashe 
 builder.Services.AddDbContextDI(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddServiceDI();
+builder.Services.AddMongoDBDI();
 builder.Services.AddJwtBearerAuthentication(jwtConfig);
+builder.Services.AddRedisDependencyInjection(builder.Configuration);  // redis cashe
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -37,7 +39,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseRouting();
 app.UseSession();

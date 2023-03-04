@@ -1,7 +1,10 @@
-﻿using AnadoluParamApi.Dto.Dtos;
+﻿using AnadoluParamApi.Data.Model;
+using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace AnadoluParamApi.Controllers
 {
@@ -9,9 +12,9 @@ namespace AnadoluParamApi.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductService productService;
+        private readonly IProductService productService;       
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IMongoDatabase mongoDb)
         {
             this.productService = productService;
         }

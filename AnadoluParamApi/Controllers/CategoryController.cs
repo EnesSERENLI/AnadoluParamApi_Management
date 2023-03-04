@@ -2,6 +2,9 @@
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace AnadoluParamApi.Controllers
 {
@@ -10,17 +13,18 @@ namespace AnadoluParamApi.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService categoryService;
-
-        public CategoryController(ICategoryService categoryService,IMapper mapper)
+        private readonly IDistributedCache distributedCache;
+        public CategoryController(ICategoryService categoryService,IMapper mapper,IDistributedCache distributedCache)
         {
             this.categoryService = categoryService;
+            this.distributedCache = distributedCache;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllCategories() //For admin
         {
-            var caregories = await categoryService.GetCategoriesAsync();
-            return Ok(caregories);
+            var categories = await GetRedis(1);
+            return Ok(categories);
         }
 
         [HttpGet]
@@ -63,6 +67,50 @@ namespace AnadoluParamApi.Controllers
         {
             var result = await categoryService.RemoveCategoryAsync(id);
             return Ok(result);
+        }
+
+        [NonAction]
+        public async Task<IEnumerable<CategoryDto>> GetRedis(int id)
+        {           
+            string cacheKey = id.ToString();
+            IEnumerable<CategoryDto> categoryDtos;
+            string json;
+
+            try
+            {
+                var categoriesFromCache = await distributedCache.GetAsync(cacheKey);
+                if (categoriesFromCache != null)
+                {
+                    json = Encoding.UTF8.GetString(categoriesFromCache);
+                    categoryDtos = JsonConvert.DeserializeObject<List<CategoryDto>>(json);
+                    return categoryDtos;
+                }
+                else
+                {
+                    var categories = await categoryService.GetCategoriesAsync();
+
+                    json = JsonConvert.SerializeObject(categories);
+                    categoriesFromCache = Encoding.UTF8.GetBytes(json);
+                    var options = new DistributedCacheEntryOptions()
+                            .SetSlidingExpiration(TimeSpan.FromDays(1)) // expires if a certain time has not been reached
+                            .SetAbsoluteExpiration(DateTime.Now.AddMonths(1)); // expires after a certain time.
+                    await distributedCache.SetAsync(cacheKey, categoriesFromCache, options);
+                    return categories;
+                }
+            }
+            catch (Exception ex)
+            {
+                //todo: log at
+                return null;
+            }
+            
+        }
+
+        [NonAction]
+        public void DeleteCache(int id)
+        {
+            // remove cashe
+            distributedCache.Remove(id.ToString());
         }
     }
 }

@@ -3,7 +3,6 @@ using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AnadoluParamApi.Service.Concrete
 {
@@ -63,14 +62,14 @@ namespace AnadoluParamApi.Service.Concrete
                 Description = x.Description,
                 UnitPrice = x.UnitPrice,
                 UnitsInStock = x.UnitsInStock,
-                UnitType = x.UnitType,
+                Status = x.Status,
                 SubCategoryId = x.SubCategoryId,
                 SubCategoryName = x.SubCategory.SubCategoryName,
-                Status = x.Status
+                UnitType = x.UnitType
             },
-            expression: x => x.Status == Base.Types.Status.Active || x.Status == Base.Types.Status.Updated || x.Status == Base.Types.Status.Deleted);
+            expression: x => x.Status != Base.Types.Status.Done);
 
-            return productList;
+            return productList.ToList();
         }
 
         public async Task<List<ProductDto>> GetProductsByCategory(int subCategoryId)
