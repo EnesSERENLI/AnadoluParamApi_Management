@@ -1,4 +1,5 @@
-﻿using AnadoluParamApi.Dto.Dtos;
+﻿using AnadoluParamApi.Data.Model;
+using AnadoluParamApi.Dto.Dtos;
 
 namespace AnadoluParamApi.Service.Abstract
 {
@@ -7,7 +8,7 @@ namespace AnadoluParamApi.Service.Abstract
         Task<string> Register(AccountDto model);
         Task LogOut();
         Task<UpdateAccountDto> GetByIdAccountAsync(int id);
-        Task<AccountDto> GetAccountByUserNameAsync(string userName);
+        Task<Account> GetAccountByUserNameAsync(string userName);
         Task<List<AccountDto>> GetAllAccountsAsync();
     }
 }

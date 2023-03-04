@@ -1,7 +1,9 @@
 ﻿using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Concrete;
 using AnadoluParamApi.Dto.Dtos;
+using AnadoluParamApi.Dto.Models;
 using AnadoluParamApi.Service.Abstract;
+using AnadoluParamApi.Service.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -13,9 +15,11 @@ namespace AnadoluParamApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService accountService;
-        public AccountController(IAccountService accountService)
+        private readonly ITokenManagementService tokenManagementService;
+        public AccountController(IAccountService accountService, ITokenManagementService tokenManagementService)
         {
             this.accountService = accountService;
+            this.tokenManagementService = tokenManagementService;
         }
 
         [HttpGet]
@@ -43,6 +47,21 @@ namespace AnadoluParamApi.Controllers
 
             var result = await accountService.Register(account);
             return Ok(result);
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> Login([FromBody] TokenRequest request)
+        {
+            var userAgent = Request.Headers["User-Agent"].ToString();
+            var result = await tokenManagementService.GenerateTokensAsync(request, DateTime.UtcNow, userAgent);
+
+            if (result.Success)
+            {
+                Log.Information($"User: {result.Response.UserName}, Role: {result.Response.Role} is logged in.");
+                return Ok(result);
+            }
+
+            return Unauthorized();
         }
 
     }

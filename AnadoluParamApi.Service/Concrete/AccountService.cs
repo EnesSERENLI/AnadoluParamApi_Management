@@ -17,12 +17,10 @@ namespace AnadoluParamApi.Service.Concrete
             _mapper = mapper;
         }
 
-        public async Task<AccountDto> GetAccountByUserNameAsync(string userName)
+        public async Task<Account> GetAccountByUserNameAsync(string userName)
         {
             var account = await _unitOfWork.AccountRepository.GetByDefault(x => x.UserName == userName);
-
-            var accountDto = _mapper.Map<AccountDto>(account);
-            return accountDto;
+            return account;
         }
 
         public async Task<List<AccountDto>> GetAllAccountsAsync()

@@ -25,7 +25,7 @@ namespace AnadoluParamApi.Extension
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfig.Secret)),
                     ValidAudience = jwtConfig.Audience,
                     ValidateAudience = false, // default True
-                    ValidateLifetime = true,
+                    ValidateLifetime = true, 
                     ClockSkew = TimeSpan.FromMinutes(2)
                 };
             });

@@ -1,4 +1,5 @@
 ﻿using AnadoluParamApi.Base.Attribute;
+using AnadoluParamApi.Base.Types;
 using System.ComponentModel.DataAnnotations;
 
 namespace AnadoluParamApi.Dto.Dtos
@@ -14,7 +15,7 @@ namespace AnadoluParamApi.Dto.Dtos
         public int OrderId { get; set; }
 
         [Required(ErrorMessage = "Quantity cannot be empty.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
+        [Range(typeof(short), "1", "32000", ErrorMessage = "Quantity must be greater than 0")]
         public short Quantity { get; set; }
 
         [Required(ErrorMessage = "UnitType cannot be empty.")]
@@ -26,5 +27,7 @@ namespace AnadoluParamApi.Dto.Dtos
         public decimal UnitPrice { get; set; }
 
         public decimal TotalPrice { get =>  UnitPrice * Quantity; }
+        [Required(AllowEmptyStrings = true)]
+        public Status Status { get; set; }
     }
 }

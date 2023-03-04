@@ -5,6 +5,7 @@ using AnadoluParamApi.Service.Concrete;
 using AnadoluParamApi.Service.Mapper;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace AnadoluParamApi.Extension
@@ -20,6 +21,16 @@ namespace AnadoluParamApi.Extension
             services.AddScoped<ISubCategoryService,SubCategoryService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITokenManagementService, TokenManagementService>();
+            services.AddScoped<IBasketService, BasketService>();
+
+            //For Session
+            services.AddSession(x =>
+            {
+                x.IdleTimeout = TimeSpan.FromMinutes(15);//We set Time here 
+                x.Cookie.HttpOnly = true;
+                x.Cookie.IsEssential = true;
+            });
+            services.AddDistributedMemoryCache(); //For use session
 
             // mapper
             var mapperConfig = new MapperConfiguration(cfg =>

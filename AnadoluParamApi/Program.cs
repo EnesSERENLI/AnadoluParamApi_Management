@@ -15,12 +15,13 @@ builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfi
 
 
 builder.Services.AddDbContextDI(builder.Configuration);
+builder.Services.AddControllers();
 builder.Services.AddServiceDI();
 builder.Services.AddJwtBearerAuthentication(jwtConfig);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddControllers();
+
 builder.Services.AddCustomizeSwagger();
 
 var app = builder.Build();
@@ -39,6 +40,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseRouting();
+app.UseSession();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>

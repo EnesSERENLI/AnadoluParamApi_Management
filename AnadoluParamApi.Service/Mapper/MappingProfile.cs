@@ -35,10 +35,12 @@ namespace AnadoluParamApi.Service.Mapper
 
             #region Order Mapper
             CreateMap<OrderDto, Order>().ReverseMap();
+            CreateMap<CartItem, OrderDto>(); //I get accountId when creating order. Order details are in a separate table.
             #endregion
 
             #region OrderDetail Mapper
             CreateMap<OrderDetailDto, OrderDetail>().ReverseMap(); 
+            CreateMap<CartItem, OrderDetailDto>().ReverseMap(); 
             #endregion
         }
     }

@@ -90,7 +90,10 @@ namespace AnadoluParamApi.Data.Repository.Concrete.BaseRepository
 
         public async Task<IEnumerable<T>> GetAllListAsync() => await entities.Cast<T>().ToListAsync(); //GetAll List without any filtered
 
-        public async Task InsertAsync(T model) => await entities.AddAsync(model); //Insert
+        public async Task InsertAsync(T model) //Insert
+        { 
+            await entities.AddAsync(model); 
+        } 
 
         public void Update(T model) //Update
         {
