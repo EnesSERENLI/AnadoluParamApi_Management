@@ -1,4 +1,5 @@
 ﻿using AnadoluParamApi.Base.Extensions;
+using AnadoluParamApi.Base.LogOperations.Abstract;
 using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Data.UnitOfWork.Concrete;
@@ -15,12 +16,14 @@ namespace AnadoluParamApi.Service.Concrete
         private readonly IUnitOfWork unitOfWork;
         private readonly IProductService productService;
         private readonly IMapper mapper;
+        private readonly ILogHelper logHelper;
 
-        public BasketService(IUnitOfWork unitOfWork,IProductService productService,IMapper mapper)
+        public BasketService(IUnitOfWork unitOfWork,IProductService productService,IMapper mapper,ILogHelper logHelper)
         {
             this.unitOfWork = unitOfWork;
             this.productService = productService;
             this.mapper = mapper;
+            this.logHelper = logHelper;
         }
 
         public async Task<string> AddToBasketAsync(ISession session,int productId, int accountId, short quantity)
@@ -48,38 +51,47 @@ namespace AnadoluParamApi.Service.Concrete
 
         public async Task<string> ComplateBasketAsync(List<CartItem> cartItems)
         {
-            var isStockEnough = await CheckStockIsEnough(cartItems); //If someone else bought the same product while there are products in the basket, the stock amount may have decreased.
-
-            if (!isStockEnough)
-                return "There are items in your cart that are more than stock.";
-
-            #region Create an Order
-            var orderdto = mapper.Map<OrderDto>(cartItems[0]);
-            Order order = mapper.Map<Order>(orderdto);
-            order.Status = Base.Types.Status.Active;
-            order.CreatedDate = DateTime.Now;
-            await unitOfWork.OrderRepository.InsertAsync(order);
-            await unitOfWork.CompleteAsync();
-            #endregion
-
-            #region Create an OrderItem
-            foreach (var cartItem in cartItems)
+            try
             {
-                var orderDetailDto = mapper.Map<OrderDetailDto>(cartItem);
-                orderDetailDto.Status = Base.Types.Status.Active;
-                var product = await productService.GetProductByIdAsync(orderDetailDto.ProductId);
+                var isStockEnough = await CheckStockIsEnough(cartItems); //If someone else bought the same product while there are products in the basket, the stock amount may have decreased.
 
-                product.UnitsInStock = (short)(product.UnitsInStock - orderDetailDto.Quantity);
-                var p = mapper.Map<Product>(product);
-                unitOfWork.ProductRepository.Update(p);
-                orderDetailDto.OrderId = order.ID;
+                if (!isStockEnough)
+                    return "There are items in your cart that are more than stock.";
 
-                var orderDetail = mapper.Map<OrderDetail>(orderDetailDto);
-                await unitOfWork.OrderDetailRepository.InsertAsync(orderDetail);
-            } 
-            #endregion
-            await unitOfWork.CompleteAsync();
-            return "Your cart has been confirmed";
+                #region Create an Order
+                var orderdto = mapper.Map<OrderDto>(cartItems[0]);
+                Order order = mapper.Map<Order>(orderdto);
+                order.Status = Base.Types.Status.Active;
+                order.CreatedDate = DateTime.Now;
+                await unitOfWork.OrderRepository.InsertAsync(order);
+                await unitOfWork.CompleteAsync();
+                #endregion
+
+                #region Create an OrderItem
+                foreach (var cartItem in cartItems)
+                {
+                    var orderDetailDto = mapper.Map<OrderDetailDto>(cartItem);
+                    orderDetailDto.Status = Base.Types.Status.Active;
+                    var product = await productService.GetProductByIdAsync(orderDetailDto.ProductId);
+
+                    product.UnitsInStock = (short)(product.UnitsInStock - orderDetailDto.Quantity);
+                    var p = mapper.Map<Product>(product);
+                    unitOfWork.ProductRepository.Update(p);
+                    orderDetailDto.OrderId = order.ID;
+
+                    var orderDetail = mapper.Map<OrderDetail>(orderDetailDto);
+                    await unitOfWork.OrderDetailRepository.InsertAsync(orderDetail);
+                }
+                #endregion
+                await unitOfWork.CompleteAsync();
+                return "Your cart has been confirmed";
+            }
+            catch (Exception ex)
+            {
+                var logDetails = logHelper.CreateLog("Basket", "ComplateBasketAsync", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Basket Operations");
+                logHelper.InsertLogDetails(logDetails);
+                return "An error is occurred. Please try again later.";
+            }
         }
 
         public async Task<bool> UpdateOrderItemQuantityAsync(CartItem cartItem,short quantity)
@@ -133,7 +145,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                //todo:log
+                var logDetails = logHelper.CreateLog("Basket", "CreateCartItem", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Basket Operations");
+                logHelper.InsertLogDetails(logDetails);
                 return false;
             }
         }

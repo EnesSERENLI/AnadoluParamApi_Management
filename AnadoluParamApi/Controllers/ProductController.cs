@@ -14,7 +14,7 @@ namespace AnadoluParamApi.Controllers
     {
         private readonly IProductService productService;       
 
-        public ProductController(IProductService productService, IMongoDatabase mongoDb)
+        public ProductController(IProductService productService)
         {
             this.productService = productService;
         }

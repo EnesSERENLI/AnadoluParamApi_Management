@@ -1,8 +1,11 @@
-﻿using AnadoluParamApi.Data.Model;
+﻿using AnadoluParamApi.Base.LogOperations.Abstract;
+using AnadoluParamApi.Base.LogOperations.Concrete;
+using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
+using MongoDB.Driver;
 
 namespace AnadoluParamApi.Service.Concrete
 {
@@ -10,10 +13,13 @@ namespace AnadoluParamApi.Service.Concrete
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogHelper logHelper;
+        
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper,ILogHelper logHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            this.logHelper = logHelper;
         }
 
         public async Task<List<ProductDto>> GetDefaultProducts()
@@ -48,8 +54,6 @@ namespace AnadoluParamApi.Service.Concrete
                 SubCategoryName = x.SubCategory.SubCategoryName
             },
             expression: x => x.ID == id);
-
-            //var model = _mapper.Map<UpdateProductDto>(product);
 
             return product;
         }
@@ -94,52 +98,79 @@ namespace AnadoluParamApi.Service.Concrete
 
         public async Task<string> InsertProduct(ProductDto model)
         {
-            var product = _mapper.Map<Product>(model);
+            try
+            {
+                var product = _mapper.Map<Product>(model);
 
-            var result = await _unitOfWork.ProductRepository.Any(x => x.ProductName == product.ProductName); //Check db control product exist ??
-            if (result)
-                return "This Product already exists";
+                var result = await _unitOfWork.ProductRepository.Any(x => x.ProductName == product.ProductName); //Check db control product exist ??
+                if (result)
+                    return "This Product already exists";
 
-            var subCategpryExist = await _unitOfWork.SubCategoryRepository.Any(x => x.ID == product.SubCategoryId); //Category control
-            if (!subCategpryExist)
-                return "The Subcategory you want to add was not found!";
+                var subCategpryExist = await _unitOfWork.SubCategoryRepository.Any(x => x.ID == product.SubCategoryId); //Category control
+                if (!subCategpryExist)
+                    return "The Subcategory you want to add was not found!";
 
-            await _unitOfWork.ProductRepository.InsertAsync(product);
-            await _unitOfWork.CompleteAsync();
-            return "Product added!";
+                await _unitOfWork.ProductRepository.InsertAsync(product);
+                await _unitOfWork.CompleteAsync();
+                return "Product added!";
+            }
+            catch (Exception ex)
+            {
+                var logDetails = logHelper.CreateLog("Product", "InsertProduct", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Insert Product");
+                logHelper.InsertLogDetails(logDetails);
+                return "An error is occurred. Please try again later.";
+            }
         }
 
         public async Task<string> RemoveProduct(int id)
         {
-            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
-            if (product == null)
-                return "Product not found!";
+            try
+            {
+                var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+                if (product == null)
+                    return "Product not found!";
 
-            await _unitOfWork.ProductRepository.DeleteAsync(product);
-            await _unitOfWork.CompleteAsync();
+                await _unitOfWork.ProductRepository.DeleteAsync(product);
+                await _unitOfWork.CompleteAsync();
 
-            return "Product deleted!";
+                return "Product deleted!";
+            }
+            catch (Exception ex)
+            {
+                var logDetails = logHelper.CreateLog("Product", "RemoveProduct", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Insert Product");
+                logHelper.InsertLogDetails(logDetails);
+                return "An error is occurred. Please try again later.";
+            }
         }
 
         public async Task<string> UpdateProduct(UpdateProductDto model)
         {
-            var updated = _mapper.Map<Product>(model);
-            var updatedExist = await _unitOfWork.ProductRepository.Any(x => x.ID == updated.ID);
+            try
+            {
+                var updated = _mapper.Map<Product>(model);
+                var updatedExist = await _unitOfWork.ProductRepository.Any(x => x.ID == updated.ID);
 
-            if (!updatedExist)
-                return "Product not found!";
+                if (!updatedExist)
+                    return "Product not found!";
 
-            var subCategpryExist = await _unitOfWork.SubCategoryRepository.Any(x => x.ID == updated.SubCategoryId); //Category control
-            if (!subCategpryExist)
-                return "The Subcategory you want to add was not found!";
+                var subCategpryExist = await _unitOfWork.SubCategoryRepository.Any(x => x.ID == updated.SubCategoryId); //Category control
+                if (!subCategpryExist)
+                    return "The Subcategory you want to add was not found!";
 
-            updated.Status = Base.Types.Status.Updated;
-            updated.UpdatedDate = DateTime.Now;
+                updated.Status = Base.Types.Status.Updated;
+                updated.UpdatedDate = DateTime.Now;
 
-            _unitOfWork.ProductRepository.Update(updated);
-            await _unitOfWork.CompleteAsync();
+                _unitOfWork.ProductRepository.Update(updated);
+                await _unitOfWork.CompleteAsync();
 
-            return "Product updated!";
+                return "Product updated!";
+            }
+            catch (Exception ex)
+            {
+                var logDetails = logHelper.CreateLog("Product", "UpdateProduct", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Insert Product");
+                logHelper.InsertLogDetails(logDetails);
+                return "An error is occurred. Please try again later.";
+            }
         }
     }
 }

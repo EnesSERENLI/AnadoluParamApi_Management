@@ -1,4 +1,5 @@
-﻿using AnadoluParamApi.Dto.Dtos;
+﻿using AnadoluParamApi.Base.LogOperations.Abstract;
+using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace AnadoluParamApi.Controllers
     {
         private readonly ICategoryService categoryService;
         private readonly IDistributedCache distributedCache;
-        public CategoryController(ICategoryService categoryService,IMapper mapper,IDistributedCache distributedCache)
+        private readonly ILogHelper logHelper;
+        public CategoryController(ICategoryService categoryService,IMapper mapper,IDistributedCache distributedCache,ILogHelper logHelper)
         {
             this.categoryService = categoryService;
             this.distributedCache = distributedCache;
+            this.logHelper = logHelper;
         }
 
         [HttpGet]
@@ -100,7 +103,8 @@ namespace AnadoluParamApi.Controllers
             }
             catch (Exception ex)
             {
-                //todo: log at
+                var logDetails = logHelper.CreateLog("Category", ControllerContext.HttpContext.Request.Method, ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Token creation error.");
+                logHelper.InsertLogDetails(logDetails);
                 return null;
             }
             

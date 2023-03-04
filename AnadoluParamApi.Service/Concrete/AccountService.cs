@@ -48,11 +48,6 @@ namespace AnadoluParamApi.Service.Concrete
             return updateAccountDto;
         }
 
-        public Task LogOut() //todo:Token işlemleri yapılırken yazılacak
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<string> Register(AccountDto model)
         {
             var account = _mapper.Map<Account>(model);

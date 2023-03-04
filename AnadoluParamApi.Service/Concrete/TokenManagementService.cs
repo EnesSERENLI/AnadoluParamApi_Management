@@ -1,4 +1,5 @@
 ﻿using AnadoluParamApi.Base.Jwt;
+using AnadoluParamApi.Base.LogOperations.Abstract;
 using AnadoluParamApi.Base.Response;
 using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
@@ -19,14 +20,16 @@ namespace AnadoluParamApi.Service.Concrete
         private readonly IAccountService accountService;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogHelper logHelper;
         private readonly JwtConfig _jwtConfig;
         private readonly byte[] _secret;
 
-        public TokenManagementService(IAccountService accountService, IMapper mapper, IUnitOfWork unitOfWork, IOptionsMonitor<JwtConfig> jwtConfig)
+        public TokenManagementService(IAccountService accountService, IMapper mapper, IUnitOfWork unitOfWork,ILogHelper logHelper, IOptionsMonitor<JwtConfig> jwtConfig)
         {
             this.accountService = accountService;
             this._mapper = mapper;
             this._unitOfWork = unitOfWork;
+            this.logHelper = logHelper;
             this._jwtConfig = jwtConfig.CurrentValue;
             this._secret = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
         }
@@ -38,13 +41,15 @@ namespace AnadoluParamApi.Service.Concrete
                 var accountDto = await accountService.GetAccountByUserNameAsync(tokenRequest.UserName);
                 if (accountDto is null)
                 {
-                    //todo: log at
+                    var logDetails = logHelper.CreateLog("Account", "InsertCategoryAsync","","", "Invalid username");
+                    logHelper.InsertLogDetails(logDetails);
                     return new BaseResponse<TokenResponse>("Invalid username or password.");
                 }
 
                 if (accountDto.Password != tokenRequest.Password)
                 {
-                    //todo: log at
+                    var logDetails = logHelper.CreateLog("Account", "InsertCategoryAsync", "", "", "Invalid password");
+                    logHelper.InsertLogDetails(logDetails);
                     return new BaseResponse<TokenResponse>("Invalid username or password.");
                 }
                 var account = _mapper.Map<Account>(accountDto);
@@ -67,7 +72,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Token_Error");
+                var logDetails = logHelper.CreateLog("Account", "InsertCategoryAsync", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Token creation error.");
+                logHelper.InsertLogDetails(logDetails);
                 return new BaseResponse<TokenResponse>("Token_Error");
             }
         }

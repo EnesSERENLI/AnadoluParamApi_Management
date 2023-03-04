@@ -1,4 +1,6 @@
-﻿using AnadoluParamApi.Data.UnitOfWork.Abstract;
+﻿using AnadoluParamApi.Base.LogOperations.Abstract;
+using AnadoluParamApi.Base.LogOperations.Concrete;
+using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Data.UnitOfWork.Concrete;
 using AnadoluParamApi.Service.Abstract;
 using AnadoluParamApi.Service.Concrete;
@@ -24,6 +26,7 @@ namespace AnadoluParamApi.Extension
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITokenManagementService, TokenManagementService>();
             services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<ILogHelper, LogHelper>();//For logs on MongoDB
 
             //For Session
             services.AddSession(x =>

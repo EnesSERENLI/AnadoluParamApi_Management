@@ -1,4 +1,5 @@
-﻿using AnadoluParamApi.Data.Model;
+﻿using AnadoluParamApi.Base.LogOperations.Abstract;
+using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
@@ -8,13 +9,14 @@ namespace AnadoluParamApi.Service.Concrete
 {
     public class SubCategoryService : ISubCategoryService
     {
-        private IUnitOfWork _unitOfWork;
-        private IMapper _mapper;
-
-        public SubCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        private readonly ILogHelper logHelper;
+        public SubCategoryService(IUnitOfWork unitOfWork, IMapper mapper,ILogHelper logHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            this.logHelper = logHelper;
         }
 
         public async Task<List<SubCategoryDto>> GetDefaultSubCategoriesAsync() //For member role
@@ -85,7 +87,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                //todo:Log ll be added..
+                var logDetails = logHelper.CreateLog("SubCategory", "InsertSubCategoryAsync", ex.StackTrace, ex.Message, "An error occurred while adding new a category.");
+                logHelper.InsertLogDetails(logDetails);
                 return ex.Message;
             }
         }
@@ -105,7 +108,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                //todo:Log ll be added..
+                var logDetails = logHelper.CreateLog("SubCategory", "RemoveSubCategoryAsync", ex.StackTrace, ex.Message, "An error occurred while removing a category.");
+                logHelper.InsertLogDetails(logDetails);
                 return ex.Message;
             }
         }
@@ -134,7 +138,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                //todo:Log ll be added..
+                var logDetails = logHelper.CreateLog("SubCategory", "UpdateSubCategoryAsync", ex.StackTrace, ex.Message, "An error occurred while updating a category.");
+                logHelper.InsertLogDetails(logDetails);
                 return ex.Message;
             }
         }

@@ -1,8 +1,10 @@
-﻿using AnadoluParamApi.Data.Model;
+﻿using AnadoluParamApi.Base.LogOperations.Abstract;
+using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
+using MongoDB.Driver;
 
 namespace AnadoluParamApi.Service.Concrete
 {
@@ -10,11 +12,12 @@ namespace AnadoluParamApi.Service.Concrete
     {
         private IUnitOfWork _unitOfWork;
         private IMapper _mapper;
-
-        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogHelper logHelper;
+        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper,ILogHelper logHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            this.logHelper = logHelper;
         }
 
         public async Task<UpdateCategoryDto> GetCategoryByIdAsync(int id)
@@ -29,7 +32,7 @@ namespace AnadoluParamApi.Service.Concrete
 
             var model = _mapper.Map<UpdateCategoryDto>(category);
 
-            return model; //model'i dön.
+            return model;
         }
 
         public async Task<List<CategoryDto>> GetCategoriesAsync()
@@ -78,7 +81,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                //todo:Log ll be added..
+                var logDetails = logHelper.CreateLog("Category","InsertCategoryAsync",ex.StackTrace,ex.Message, "An error occurred while adding a new category.");
+                logHelper.InsertLogDetails(logDetails);
                 return ex.Message;
             }
         }
@@ -98,7 +102,8 @@ namespace AnadoluParamApi.Service.Concrete
             }
             catch (Exception ex)
             {
-                //todo:Log ll be added..
+                var logDetails = logHelper.CreateLog("Category", "RemoveCategoryAsync", ex.StackTrace, ex.Message, "An error occurred while removing category.");
+                logHelper.InsertLogDetails(logDetails);
                 return ex.Message;
             }
         }
@@ -117,13 +122,14 @@ namespace AnadoluParamApi.Service.Concrete
                 updated.UpdatedDate = DateTime.Now;
 
                 _unitOfWork.CategoryRepository.Update(updated);
-                _unitOfWork.CompleteAsync();
+                await _unitOfWork.CompleteAsync();
 
                 return "Category updated!";
             }
             catch (Exception ex)
             {
-                //todo:Log ll be added..
+                var logDetails = logHelper.CreateLog("Category", "UpdateCategoryAsync", ex.StackTrace, ex.Message, "An error occurred while updating a category.");
+                logHelper.InsertLogDetails(logDetails);
                 return ex.Message;
             }
         }
