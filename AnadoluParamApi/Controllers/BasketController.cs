@@ -1,11 +1,8 @@
 ﻿using AnadoluParamApi.Base.Extensions;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
-using AnadoluParamApi.Service.Concrete;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
 using System.Security.Claims;
 
 namespace AnadoluParamApi.Controllers
@@ -21,6 +18,7 @@ namespace AnadoluParamApi.Controllers
             this.basketService = basketService;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult MyBasket()
         {
@@ -30,6 +28,26 @@ namespace AnadoluParamApi.Controllers
             return Ok("You do not have any products in your cart.");
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> MyComplatedOrders() //For complated orders
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized("In order to create a basket, you need to log in to the system.");
+
+            string accountId = (User.Identity as ClaimsIdentity).FindFirst("AccountId").Value;
+            if (string.IsNullOrEmpty(accountId))
+                return Unauthorized("In order to create a basket, you need to log in to the system.");
+
+            
+            var orderList = await basketService.GetMyOrders(int.Parse(accountId));
+            if (orderList != null && orderList.Count > 0)
+                return Ok(orderList);
+
+            return Ok("You do not have a previous order.");
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddToBasket(int productId,short quantity)
         {
@@ -49,6 +67,7 @@ namespace AnadoluParamApi.Controllers
         /// Confirm your basket. 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> ConfirmCart()
         {
@@ -72,6 +91,7 @@ namespace AnadoluParamApi.Controllers
         /// <param name="productId"></param>
         /// <param name="newQuantity"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> MyOrderItemQuantity(int productId,short newQuantity)
         {
@@ -97,6 +117,7 @@ namespace AnadoluParamApi.Controllers
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> DeleteOrderItem(int productId)
         {
@@ -117,6 +138,7 @@ namespace AnadoluParamApi.Controllers
         /// Deletes the whole basket.
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> ClearBasket()
         {

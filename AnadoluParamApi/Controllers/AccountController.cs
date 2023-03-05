@@ -10,6 +10,7 @@ using Serilog;
 
 namespace AnadoluParamApi.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -39,6 +40,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(account);
         }
 
+        [AllowAnonymous] //Everyone can request this endpoint..
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] AccountDto account)
         {
@@ -49,7 +51,8 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost()]
+        [AllowAnonymous]
+        [HttpPost]
         public async Task<IActionResult> Login([FromBody] TokenRequest request)
         {
             var userAgent = Request.Headers["User-Agent"].ToString();

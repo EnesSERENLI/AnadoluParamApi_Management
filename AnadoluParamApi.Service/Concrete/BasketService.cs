@@ -1,9 +1,11 @@
 ﻿using AnadoluParamApi.Base.Extensions;
 using AnadoluParamApi.Base.LogOperations.Abstract;
+using AnadoluParamApi.Data.Context;
 using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Data.UnitOfWork.Abstract;
 using AnadoluParamApi.Data.UnitOfWork.Concrete;
 using AnadoluParamApi.Dto.Dtos;
+using AnadoluParamApi.Dto.VMs;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,7 @@ namespace AnadoluParamApi.Service.Concrete
         private readonly IMapper mapper;
         private readonly ILogHelper logHelper;
 
-        public BasketService(IUnitOfWork unitOfWork,IProductService productService,IMapper mapper,ILogHelper logHelper)
+        public BasketService(IUnitOfWork unitOfWork, IProductService productService, IMapper mapper, ILogHelper logHelper)
         {
             this.unitOfWork = unitOfWork;
             this.productService = productService;
@@ -26,16 +28,16 @@ namespace AnadoluParamApi.Service.Concrete
             this.logHelper = logHelper;
         }
 
-        public async Task<string> AddToBasketAsync(ISession session,int productId, int accountId, short quantity)
+        public async Task<string> AddToBasketAsync(ISession session, int productId, int accountId, short quantity)
         {
-            var product  = await productService.GetProductByIdAsync(productId);
+            var product = await productService.GetProductByIdAsync(productId);
             if (product == null)
                 return "Product not found!";
 
             if (product.UnitsInStock < quantity)
                 return "There is not enough stock for your order quantity.";
 
-            
+
 
             var p = mapper.Map<Product>(product);
             var result = CreateCartItem(session, p, accountId, quantity);
@@ -94,7 +96,32 @@ namespace AnadoluParamApi.Service.Concrete
             }
         }
 
-        public async Task<bool> UpdateOrderItemQuantityAsync(CartItem cartItem,short quantity)
+        public async Task<List<OrderVM>> GetMyOrders(int accountId)
+        {
+            try
+            {
+                var orderList = await unitOfWork.OrderDetailRepository.GetFilteredFirstOrDefaults(selector: x => new OrderDetailDto
+                {
+                    ProductName = x.Product.ProductName,
+                    UnitPrice = x.UnitPrice,
+                    UnitType = x.UnitType,
+                    Quantity = x.Quantity
+                },
+            expression: x => x.Order.AccountId == accountId
+            );
+                var dto = mapper.Map<List<OrderVM>>(orderList);
+                return dto.ToList();
+            }
+            catch (Exception ex)
+            {
+                var logDetails = logHelper.CreateLog("Basket", "GetMyOrders", ex.StackTrace, ex.InnerException != null ? ex.InnerException.Message : ex.Message, "Basket Operations");
+                logHelper.InsertLogDetails(logDetails);
+                return null;
+            }
+
+        }
+
+        public async Task<bool> UpdateOrderItemQuantityAsync(CartItem cartItem, short quantity)
         {
             var product = await productService.GetProductByIdAsync(cartItem.ProductId);
 
@@ -115,7 +142,7 @@ namespace AnadoluParamApi.Service.Concrete
             return true;
         }
 
-        private bool CreateCartItem(ISession session,Product product, int accountId, short quantity)
+        private bool CreateCartItem(ISession session, Product product, int accountId, short quantity)
         {
             try
             {

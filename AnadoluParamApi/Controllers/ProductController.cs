@@ -1,6 +1,7 @@
 ﻿using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -19,7 +20,7 @@ namespace AnadoluParamApi.Controllers
             this.productService = productService;
         }
 
-
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllProducts() //For admin
         {
@@ -27,13 +28,15 @@ namespace AnadoluParamApi.Controllers
             return Ok(products);
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetDefaultProducts() //For members
+        public async Task<IActionResult> GetDefaultProducts() //For admin or members
         {
             var products = await productService.GetDefaultProducts();
             return Ok(products);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetProductById([FromQuery] int id) //For members (Member can see onlu active products)
         {
@@ -43,6 +46,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetProductsBySubCategoryId([FromQuery] int subCategoryId) //For members
         {
@@ -52,6 +56,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpPost]
         public async Task<IActionResult> InsertProduct([FromBody] ProductDto model) //For admin
         {
@@ -61,6 +66,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductDto model) //For admin
         {
@@ -71,6 +77,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id) //For admin
         {

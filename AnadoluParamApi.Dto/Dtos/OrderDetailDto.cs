@@ -10,6 +10,9 @@ namespace AnadoluParamApi.Dto.Dtos
         [Range(1, int.MaxValue, ErrorMessage = "PruducyId must be greater than 0")]
         public int ProductId { get; set; }
 
+        [Required(AllowEmptyStrings = true)]
+        public string ProductName { get; set; }
+
         [Required(ErrorMessage = "OrderId cannot be empty.")]
         [Range(1, int.MaxValue, ErrorMessage = "OrderId must be greater than 0")]
         public int OrderId { get; set; }

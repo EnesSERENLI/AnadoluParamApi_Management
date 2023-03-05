@@ -1,5 +1,6 @@
 ﻿using AnadoluParamApi.Data.Model;
 using AnadoluParamApi.Dto.Dtos;
+using AnadoluParamApi.Dto.VMs;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,7 @@ namespace AnadoluParamApi.Service.Mapper
             #region Order Mapper
             CreateMap<OrderDto, Order>().ReverseMap();
             CreateMap<CartItem, OrderDto>(); //I get accountId when creating order. Order details are in a separate table.
+            CreateMap<OrderDetailDto, OrderVM>(); //I get accountId when creating order. Order details are in a separate table.
             #endregion
 
             #region OrderDetail Mapper

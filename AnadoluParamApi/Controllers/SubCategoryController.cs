@@ -1,6 +1,7 @@
 ﻿using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnadoluParamApi.Controllers
@@ -16,6 +17,7 @@ namespace AnadoluParamApi.Controllers
             this.subCategoryService = subCategoryService;
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllSubCategories() //For admin
         {
@@ -23,6 +25,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(subCategories);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetDefaultSubCategories() //For members
         {
@@ -30,6 +33,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(subCategories);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetSubCategoryById([FromQuery] int id) //For members
         {
@@ -39,6 +43,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles ="admin")]
         [HttpPost]
         public async Task<IActionResult> InsertSubCategory([FromBody] SubCategoryDto model) //For admin
         {
@@ -48,6 +53,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateSubCategory([FromBody] UpdateSubCategoryDto model) //For admin
         {
@@ -58,6 +64,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSubProduct(int id) //For admin
         {

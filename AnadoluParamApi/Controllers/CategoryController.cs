@@ -2,6 +2,7 @@
 using AnadoluParamApi.Dto.Dtos;
 using AnadoluParamApi.Service.Abstract;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -23,6 +24,7 @@ namespace AnadoluParamApi.Controllers
             this.logHelper = logHelper;
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllCategories() //For admin
         {
@@ -30,13 +32,15 @@ namespace AnadoluParamApi.Controllers
             return Ok(categories);
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetDefaultCategories() //For members
+        public async Task<IActionResult> GetDefaultCategories() //For members or admins
         {
             var categories = await categoryService.GetDefaultCategoriesAsync();
             return Ok(categories);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetCategoryById([FromQuery] int id) //For members
         {
@@ -46,6 +50,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> InsertCategory([FromBody] CategoryDto model) //For admin
         {
@@ -55,6 +60,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryDto model) //For admin
         {
@@ -65,6 +71,7 @@ namespace AnadoluParamApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id) //For admin
         {
