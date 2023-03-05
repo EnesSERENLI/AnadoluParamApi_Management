@@ -64,7 +64,7 @@ namespace AnadoluParamApi.Controllers
                 return Ok(result);
             }
 
-            return Unauthorized();
+            return Unauthorized(result);
         }
 
     }
